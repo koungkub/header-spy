@@ -1,15 +1,21 @@
-FROM golang:1.12-alpine AS gobuild
-WORKDIR /golang
+FROM golang:1.12.9-alpine3.10 as build
 ENV GO111MODULE=on
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOPROXY=https://proxy.golang.org
+WORKDIR /golang
+RUN apk add --update --no-cache git
 COPY go.mod .
 COPY go.sum .
-RUN apk add --update --no-cache git \
-    && go mod download
+RUN go mod download
 COPY . .
-RUN go build -o app .
+RUN go build -a -tags netgo -ldflags '-w' -o app .
 
-FROM alpine:3.9
-WORKDIR /golang
-COPY --from=gobuild /golang/app /golang/app
+FROM alpine:3.10
+LABEL MAINTAINER=1997jirasak@gmail.com
+ENV TZ=Asia/Bangkok
+WORKDIR /go
+RUN apk add --update --no-cache tzdata ca-certificates
+COPY --from=build /golang/app .
 EXPOSE 1323
-CMD [ "./app" ]
+ENTRYPOINT [ "./app" ]

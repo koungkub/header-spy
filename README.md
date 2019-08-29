@@ -1,7 +1,13 @@
-# lab-header-spy
+# header-spy
 
-port 1323
+## Docker image
 
-image -> `koungkub/header`
+`docker pull koungkub/header-spy`
 
-serve it -> `docker run --name header -d -p 1323:1323 koungkub/header`
+## Run !!!!!
+
+`docker run --rm -it -p 1323:1323 koungkub/header-spy`
+
+**specific port via environment variable**
+
+`docker run --rm -it -p 1323:3000 -e PORT=:3000 koungkub/header-spy`
